@@ -1,0 +1,316 @@
+---
+title: "Tugas Analisis Regresi"
+author: "Kelompok 4"
+date: "2024-02-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Anggota Kelompok 4 - Paralel 1 
+
+1.  Thufaillah Ulfah Jaenudin (G1401221001)
+2.  Biki Nurul Af'ida (G1401221043)
+3.  Alista Sava Davina (G1401221046)
+
+# Data Salary
+
+Melalui data salary ini kami akan melakukan analisis regresi linear sederhana untuk mengetahui apa model yang akan terbentuk dengan persamaan sederhana
+
+```{r}
+DataSalary <- read.csv("C:/Users/MyBook Hype/Documents/ANREG/DATA ANREG KELOMPOK 4.csv",  sep=";")
+head (DataSalary)
+```
+
+Mengambil peubah lama pengalaman sebagai x dan besar gaji sebagai y
+
+```{r}
+Gaji<-DataSalary$Salary
+LamaPengalaman<-DataSalary$Years.of.Experience
+
+DataSalary<-data.frame(cbind(Gaji,LamaPengalaman))
+head(DataSalary)
+```
+
+# Diagram Pencar Hubungan Lama Pengalaman Kerja dengan Besar Gaji
+
+```{r}
+plot(LamaPengalaman,Gaji)
+```
+
+dari diagram plot ini dapat diketahui bahwa ada hubungan linear positif antara lama pengalaman bekerja seorang pegawai dengan besar gaji yang didapatkan
+
+# Pembantukan Model Tanpa Fungsi Bawaan (Manual)
+
+### Parameter Regresi
+
+#### Slope
+
+```{r}
+b1<-(sum(LamaPengalaman*Gaji)-sum(LamaPengalaman)*sum(Gaji)/n)/(sum(LamaPengalaman^2)-(sum(LamaPengalaman)^2/n))
+b1
+```
+
+### Intercept
+
+```{r}
+b0<-mean(Gaji)-b1*mean(LamaPengalaman)
+b0
+```
+
+# Persamaan Garis Regresi
+
+```{r}
+knitr::include_graphics("C:/Users/MyBook Hype/Pictures/Screenshots/Screenshot (458).png")
+png
+```
+
+Dapat diduga bahwa setiap kenaikan satu angka lama pengalaman kerja maka akan meningkatkan rata-rata kenaikan besar gaji pegawai sebesar 6844.511. Nilai intercept sebesar 31921.22 merupakan dugaan besaran nilai gaji dengan pegawai yang tidak memiliki pengalaman kerja, hal ini dapat terjadi karena adanya variabel lain yang tidak dijelaskan dalam model
+
+## Koefisien Korelasi, Determinasi dan Penyesuaiannya
+
+### Koefisien Korelasi
+
+```{r}
+r<-(sum(LamaPengalaman*Gaji)-sum(LamaPengalaman)*sum(Gaji)/n)/
+  sqrt((sum(LamaPengalaman^2)-(sum(LamaPengalaman)^2/n))*(sum(Gaji^2)-(sum(Gaji)^2/n)))
+r
+```
+
+didapatkan nilai koefisien korelasi sebesar 0.9303377, hal ini menunjukan bahwa ada hubungan yang positif dan kuat antara lamanya pengalaman (x) dan besarnya gaji (y). semakin lama pengalaman pekerjaan pegawai, semakin tinggi pula besar gaji yang didapatkan, begitu pula sebaliknya.
+
+### Koefisien Determinasi
+
+```{r}
+Koef_det<-r^2
+Koef_det
+```
+
+didapatkan nilai koefisien determinasi sebesar 0.8655283, hal ini berarti bahwa 86,55283% dari variasi dalam besar gaji dapat dijelaskan oleh variabel lama pengalaman kerja pegawai.hal ini dapat disimpulkan bahwa model regresi telah berhasil menjelaskan sebagian besar variasi dalam data.
+
+## Signifikan Parameter (Nilai-t) untuk Penduga Parameter Slope
+
+### Pengujian Hipotesis untuk Penduga Parameter Slope
+
+H0: b1 = 0 (Tidak terdapat hubungan linear antara lamanya pengalaman kerja dengan rata-rata peningkatan besar gaji)
+
+H1 = b1 ≠ 0 (Terdapat hubungan linear antara lamanya pengalaman kerja dengan rata-rata peningkatan besar gaji)
+
+### Statistik Uji
+
+### t-hit Slope
+
+```{r}
+t_b1<-b1/se_b1
+t_b1
+```
+
+### p-value Slope
+
+```{r}
+p_valueb1 <- 2*pt(-abs(t_b1 ),df<-n-2)
+p_valueb1
+```
+
+### Kaidah Keputusan
+
+Karena alpha (0,05) \> p-valueb1 (1.02137e-163) maka tolak H0, artinya pada taraf nyata 5% cukup bukti untuk menyatakan bahwa terdapat hubungan linear antara lamanya pengalaman kerja dengan rata-rata peningkatan besar gaji
+
+## Signifikan Parameter (Nilai-t) untuk Penduga Parameter Intercept
+
+### Pengujian Hipotesis untuk Penduga Parameter Intercept
+
+H0: b0 = 0 (Tidak terdapat nilai gaji yang tidak dapat dijelaskan oleh lama pengalaman kerja )
+
+H1 = b0 ≠ 0 (Terdapat nilai gaji yang tidak dapat dijelaskan oleh lama pengalaman kerja)
+
+### Statistik Uji
+
+### t-hit Intercept
+
+```{r}
+t_b0<-b0/se_b0
+t_b0
+```
+
+### p-value intercept
+
+```{r}
+p_valueb0 <- 2*pt(-abs(t_b0 ),df<-n-2)
+p_valueb0
+```
+
+### Kaidah Keputusan
+
+Karena alpha (0,05) \> p-valueb0 (8.238073e-57) maka tolak H0, artinya pada taraf nyata 5% cukup bukti untuk menyatakan bahwa terdapat nilai gaji yang tidak dapat dijelaskan oleh lama pengalaman kerja
+
+# Penguraian Keragaman
+
+Penguraian keragaman dugaan persamaan regresi linear dapat dilakukan terlebih dahulu secara eksploratif melalui visualisasi sebagai berikut. Dari scatter plot yang dihasilkan, dapat diamati dua persamaan garis, yaitu Y duga (garis merah) sebagai nilai harapan Y sekaligus dugaan persamaan dan Y bar (garis biru) sebagai rata-rata dari seluruh nilai Yi yang ada
+
+```{r}
+Gaji.bar <- mean(Gaji)
+plot(LamaPengalaman,Gaji)
+abline(model, col="red")
+text(30, 220, "Gaji_duga", adj = c(-0.1, 1.5), col = "red", cex = 0.8)
+abline(h=Gaji.bar, col="blue")
+text(31, 185, "Gaji_bar", adj = c(-0.1, 1.5), col = "blue", cex = 0.8)
+```
+
+Dari scatter plot di atas, teramati adanya amatan yang menyimpang relatif terhadap nilai harapannya. Penyimpangan amatan dari nilai harapannya inilah yang disebut sebagai galat. Keragaman dari galat tiap amatan ini dapat diurai berdasarkan garis dugaan persamaan dan garis rataan nilai resposnya.
+
+## Galat Standart Error Parameter Regresi
+
+```{r}
+galat<-Gaji-(b0+b1*LamaPengalaman)
+ragam_galat<-sum(galat^2)/(n-2)
+```
+
+### Standart Error Parameter Slope
+
+```{r}
+se_b1<-sqrt(ragam_galat/sum((LamaPengalaman-mean(LamaPengalaman))^2))
+se_b1
+```
+
+### Standart Error Parameter Intercept
+
+```{r}
+se_b0<-sqrt(ragam_galat*(1/n+mean(LamaPengalaman)^2/sum((LamaPengalaman-mean(LamaPengalaman))^2)))
+se_b0
+```
+
+## Ukuran Keragaman
+
+```{r}
+galat<-Gaji-(b0+b1*LamaPengalaman)
+```
+
+### Derajat Bebas
+
+```{r}
+dbReg<-1  
+dbg<-n-2 
+dbt<-n-1
+```
+
+```{r}
+dbReg
+```
+
+```{r}
+dbg
+```
+
+```{r}
+dbt
+```
+
+### Jumlah Kuadrat
+
+```{r}
+JKG <- sum((Gaji - (b0+b1*LamaPengalaman))^2) 
+JKReg <- sum(((b0+b1*LamaPengalaman)- mean(Gaji))^2) 
+JKT <- sum((Gaji - mean(Gaji))^2)
+JKT <- JKReg+JKG
+```
+
+```{r}
+JKReg
+```
+
+```{r}
+JKG
+```
+
+```{r}
+JKT 
+```
+
+### Kuadrat Tengah
+
+```{r}
+KTReg <- JKReg/dbReg
+KTG <- JKG/dbg
+```
+
+```{r}
+KTReg
+```
+
+```{r}
+KTG
+```
+
+# Tabel Sidik Ragam
+
+```{r}
+SK <- c("Regresi","Galat", "Total")
+db <- c(dbReg, dbg, dbt)
+JK <- c(JKReg, JKG, JKT)
+KT <- c(KTReg, KTG, NA)
+F_hitung <- c(Fhit, NA, NA)
+significanceF <- c(1.02137e-163, NA, NA)
+data_frame <- data.frame(SK, db, JK, KT, F_hitung, significanceF)
+data_frame
+```
+
+# Pembentukan Model dengan Fungsi lm
+
+Penggunaan fungsi "lm", membantu untuk memperoleh secara langsung nilai-nilai pada pemodelan regresi dari data yang kita miliki, seperti nilai parameter,signifikansinya, standar eror, koefisien determinasi hingga ukuran keragamannya.
+
+```{r}
+model<-lm(Gaji~LamaPengalaman,DataSalary<-DataSalary)
+summary(model)
+```
+
+```{r}
+anova(model) 
+```
+
+# Selang Kepercayaan
+
+## Selang Kepercayaan Intercept
+
+```{r}
+#Batas Bawah Intercept
+(bb.b0 <- b0 - abs(qt(0.025, df=n-2))*se_b0)
+```
+
+```{r}
+#Batas Atas Intercept
+(ba.b0 <- b0 + abs(qt(0.025, df=n-2))*se_b0)
+```
+
+diyakini bahwa dalam taraf kepercayaan 95% dugaan parameter intercept berada dalam selang 28621.94 hingga 35220.49.
+
+## Selang Kepercayaan Slope
+
+```{r}
+#Batas Bawah Slope
+(bb.b1 <- b1 - abs(qt(0.025, df=n-2))*se_b1)
+```
+
+```{r}
+#Batas Atas Slope
+(ba.b1 <- b1 + abs(qt(0.025, df=n-2))*se_b1)
+```
+
+diyakini bahwa dalam taraf kepercayaan 95% dugaan parameter slope berada dalam selang 6569.089 hingga 7119.932.
+
+## Selang Kepercayaan Rataan (Nilai Harapan) Amatan
+
+```{r}
+amatan.diduga <- data.frame(LamaPengalaman=30)
+predict(model, amatan.diduga, interval = "confidence")
+```
+
+Berdasarkan output sintaks di atas, diketahui bahwa dugaan rataan nilai Y ketika nilai x1=30 adalah 237256.5. Selain itu, diindikasikan juga bahwa dalam taraf kepercayaan 95%, diyakini bahwa nilai dugaan rataan Y ketika nilai x1=30 berada dalam selang 231468.4 hingga 243044.6.
+
+## Selang Kepercayaan Individu Amatan
+
+```{r}
+predict(model, amatan.diduga, interval = "prediction")
+```
+
+Berdasarkan output sintaks di atas, diketahui bahwa dugaan nilai individu Y ketika nilai x1=30 adalah 237256.5. Selain itu, diindikasikan juga bahwa dalam taraf kepercayaan 95%, diyakini bahwa nilai amatan individu Y ketika nilai x1=30 berada dalam selang 201947.2 hingga 272565.9.
